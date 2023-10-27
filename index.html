@@ -5,9 +5,12 @@
 <button id=btnRoll>巻く</button>
 <button id=btnShot>撮る</button>
 </div>
+<button id=btnQR>QR</button>
 <video id=videoElement></video>
 <div id=photo>
   <!--<img src=IMG_2202.jpg>-->
+</div>
+<div id=qr>
 </div>
 <style>
 html {
@@ -82,10 +85,16 @@ body {
   right: .3em;
   text-align: right;
 }
-#btnRoll, #btnShot {
+button {
   z-index: 100;
   padding: .2em .8em;
   font-size: 16px;
+}
+#btnQR {
+  position: absolute;
+  top: .3em;
+  left: .3em;
+  text-align: right;
 }
 </style>
 <script type="module">
@@ -128,8 +137,11 @@ btnShot.onclick = () => {
   photo.innerHTML = "";
   photo.appendChild(img);
 };
-
+btnQR.onclick = () => {
+  open("https://code4fukui.github.io/qrmaker/#https://code4fukui.github.io/instantcam/", "_blank");
+};
 addEventListener('touchmove', e => {
   e.preventDefault();
 });
+document.addEventListener("dblclick", function(e){ e.preventDefault();}, { passive: false });
 </script>
