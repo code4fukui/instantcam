@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>instantcam</title>
+</head><body>
+<div id=buttons>
+<button id=btnRoll>巻く</button>
+<button id=btnShot>撮る</button>
+</div>
+<video id=videoElement></video>
+<div id=photo>
+  <!--<img src=IMG_2202.jpg>-->
+</div>
+<style>
+html {
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  background-color: black;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+#videoElement {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+}
+#photo {
+	box-shadow: inset 0px 0px 200px rgba(0, 0, 0, .7);
+	background: -webkit-linear-gradient(
+    top,
+    rgba(255,145,0,0.1) 0%,
+    rgba(255,230,48,0.05) 30%
+  ), -webkit-linear-gradient(
+    20deg,
+    rgba(255,0,0,0.1) 0%,
+    rgba(255,0,0,0.05) 35%
+  );
+	display: table;
+}
+@keyframes fadein {
+  0% {
+     opacity: 0
+  }
+  30% {
+     opacity: 0.1
+  }
+  60% {
+     opacity: 0.3
+  }
+  100% {
+     opacity: 1
+  }
+}
+#photo img { 
+	filter: sepia(30%) brightness(110%) contrast(120%);
+  z-index: -1;
+  position: relative;
+  animation: fadein 15s ease-out forwards;
+  object-fit: contain;
+  object-position: 50% 50%;
+  width: 100vw;
+  height: 100vh;
+}
+/*
+#photo::after {
+  content: '';
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 2em;
+  mix-blend-mode: multiply;
+  background-image: radial-gradient(rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, .1) 30%, transparent 100%);
+  background-color: #fff;
+  background-position: 0 0;
+  background-size: 3px 3px;
+}
+*/
+#buttons {
+  position: absolute;
+  top: .3em;
+  right: .3em;
+  text-align: right;
+}
+#btnRoll, #btnShot {
+  z-index: 100;
+  padding: .2em .8em;
+  font-size: 16px;
+}
+</style>
+<script type="module">
+import { Camera } from "https://code4fukui.github.io/Camera/Camera.js";
+
+const camera = new Camera(videoElement, {
+  onFrame: async () => {
+    // use videoElement as image
+  },
+  width: 1280,
+  height: 720,
+  backcamera: true,
+});
+
+const captureImage = video => {
+  const canvas = document.createElement("canvas");
+  const g = canvas.getContext("2d");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  console.log(canvas.width, canvas.height, video)
+  g.drawImage(video, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.95);
+};
+
+const audioShot = new Audio("cam-switch.wav");
+const audioRoll = new Audio("cam-roll.wav");
+
+btnRoll.onclick = () => {
+  audioRoll.currentTime = 0;
+  audioRoll.play();
+  camera.start();
+};
+btnShot.onclick = () => {
+  audioShot.currentTime = 0;
+  audioShot.play();
+  const jpeg = captureImage(videoElement);
+  camera.stop();
+  const img = new Image();
+  img.src = jpeg;
+  photo.innerHTML = "";
+  photo.appendChild(img);
+};
+
+addEventListener('touchmove', e => {
+  e.preventDefault();
+});
+</script>
